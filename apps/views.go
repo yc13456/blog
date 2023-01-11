@@ -2,25 +2,19 @@ package apps
 
 import (
 	"fmt"
-	"gin-blog/models"
+	"gin-blog/models/mysql"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func register(c *gin.Context){
-	var user models.User
+	var user mysql.User
 	if c.Request.Method=="GET"{
 		c.HTML(http.StatusOK, "index/register.tmpl", gin.H{
 			"title": "register website",
 		})
 		return
 	}else if c.Request.Method == "POST"{
-		name := c.PostForm("name")
-		email := c.PostForm("email")
-		password := c.PostForm("password")
-		phone := c.PostForm("phone")
-		fmt.Println(name,email,password,phone)
-
 		if c.ShouldBind(&user) != nil{
 			c.JSON(http.StatusBadRequest,map[string]string{
 				"error": "Parsing parameter error"})
@@ -35,7 +29,7 @@ func register(c *gin.Context){
 }
 
 func login(c *gin.Context){
-	var user models.User
+	var user mysql.User
 	if c.Request.Method=="GET"{
 		c.HTML(http.StatusOK, "index/login.tmpl", gin.H{
 			"title": "login website get",
@@ -52,7 +46,7 @@ func login(c *gin.Context){
 				"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK,map[string]string{
+		c.HTML(http.StatusOK,"index/main.tmpl",map[string]string{
 			"msg": "login success"})
 	} else{
 		c.JSON(http.StatusBadRequest,map[string]string{

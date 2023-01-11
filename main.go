@@ -9,12 +9,14 @@ import (
 )
 
 func main() {
-	err :=models.InitDB()
-	if err!=nil{
+	mysqlDB := models.NewDriver("mysql")
+	err := mysqlDB.Connect()
+	if err != nil{
 		klog.Errorf("init db error %v",err)
 	}
 
 	engine := gin.Default()
+	engine.Use(gin.Logger(),gin.Recovery())
 	engine.LoadHTMLGlob("templates/**/*")
 	apps.Routes(engine)
 

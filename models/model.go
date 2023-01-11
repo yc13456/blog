@@ -1,0 +1,17 @@
+package models
+
+import "gin-blog/models/mysql"
+
+type Driver interface {
+	Connect() error
+}
+
+func NewDriver(name string)(driver Driver){
+	switch name {
+	case "mysql":
+		driver = mysql.NewMysqlDB()
+	case "redis":
+		//
+	}
+	return
+}
