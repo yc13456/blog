@@ -3,49 +3,38 @@ package mysql
 import (
 	"errors"
 	"fmt"
-	"gin-blog/models"
-	"gorm.io/driver/mysql"
+
 	"gorm.io/gorm"
+
+	"gin-blog/utils"
+	"gorm.io/driver/mysql"
+
 )
 
 var db *gorm.DB
 
-type sqlParam struct {
-	userName 	string
-	passWord 	string
-	host 		string
-	port 		int
-	Dbname 		string
-	timeout 	int
-}
 
 type mysqlDb struct {
-	sql sqlParam
+	sql utils.SqlParam
 }
 
-func NewMysqlDB() models.Driver{
+func NewMysqlDB() *mysqlDb{
 	return &mysqlDb{
-		sql: sqlParam{
-			userName : "root",
-			passWord : "123456",
-			host : "192.168.1.116",
-			port : 3306,
-			Dbname : "blog",
-			timeout : 10,
+		sql: utils.SqlParam{
+			UserName: "root",
+			PassWord: "123456",
+			Host:     "192.168.1.110",
+			Port:     3306,
+			Dbname :  "blog",
+			Timeout:  "10s",
 		},
 	}
 }
 
 func (c *mysqlDb) Connect() error{
-	//配置MySQL连接参数
-	username := "root"  //账号
-	password := "123456" //密码
-	host := "192.168.1.116" //数据库地址，可以是Ip或者域名
-	port := 3306 //数据库端口
-	Dbname := "blog" //数据库名
-	timeout := "10s" //连接超时，10秒
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local&timeout=%s",
+		c.sql.UserName, c.sql.PassWord, c.sql.Host, c.sql.Port, c.sql.Dbname, c.sql.Timeout)
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local&timeout=%ss", username, password, host, port, Dbname, timeout)
 	var err error
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {

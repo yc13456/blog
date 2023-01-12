@@ -23,9 +23,8 @@ func Routes(engine *gin.Engine){
 		dst := "./" + file.Filename
 		// 上传文件至指定的完整文件路径
 		c.SaveUploadedFile(file, dst)
-
 		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
-
 	})
+
 }
 
