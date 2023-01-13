@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func register(c *gin.Context){
@@ -31,8 +32,18 @@ func register(c *gin.Context){
 			return
 		}
 
-		// create token
-		user.Register(user.Name,user.Password,user.Email,user.Phone)
+		// create Token
+		token,err := createToken(&user)
+		if err!=nil{
+			c.JSON(http.StatusBadRequest,map[string]string{
+				"error": err.Error()})
+			return
+		}
+
+		if err = user.Register(user.Name,user.Password,user.Email,user.Phone,token); err!=nil{
+			c.JSON(http.StatusBadRequest,map[string]string{
+				"error": err.Error()})
+		}
 	} else{
 		c.JSON(http.StatusBadRequest,map[string]string{
 			"error": "Unknown Request Method"})
@@ -53,8 +64,12 @@ func registerCheck(user *mysql.User) error {
 }
 
 func createToken(user *mysql.User)(token string,err error){
-	//tn := time.Now().Unix()
-	//utils.AesEncrypt(tn,)
+	tn := time.Now().String()
+	var role mysql.Role
+	if err:= role.QueryRole(mysql.NormalUser);err != nil{
+		return "",err
+	}
+	token= utils.AesEncrypt(tn+"|||"+user.Name+"|||"+user.Password,role.Key)
 	return
 }
 
@@ -66,12 +81,11 @@ func login(c *gin.Context){
 		})
 		return
 	}else if c.Request.Method == "POST"{
-		if c.ShouldBind(&user)!=nil{
-			c.JSON(http.StatusBadRequest,map[string]string{
-				"error": fmt.Sprintf("request param error, %v",c.Params)})
-			return
-		}
-		if err := user.Login(user.Name,user.Password); err!=nil{
+		token := c.Request.Header.Get("Authorization")
+		name := c.Request.PostForm.Get("name")
+		password := c.Request.PostForm.Get("pasword")
+
+		if err := user.Login(name,password,token); err!=nil{
 			c.JSON(http.StatusBadRequest,map[string]string{
 				"error": err.Error()})
 			return

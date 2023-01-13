@@ -12,7 +12,7 @@ type redisDB struct {
 func NewRedisDB() *redisDB {
 	return &redisDB{
 		client: redis.NewClient(&redis.Options{
-			Addr:     "192.168.1.110:6379", //连接地址
+			Addr:     "192.168.1.106:6379", //连接地址
 			Password: "",               //连接密码
 			DB:       0,                //默认连接库
 			PoolSize: 100,              //连接池大小

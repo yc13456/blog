@@ -23,7 +23,7 @@ func NewMysqlDB() *mysqlDb{
 		sql: utils.SqlParam{
 			UserName: "root",
 			PassWord: "123456",
-			Host:     "192.168.1.110",
+			Host:     "192.168.1.106",
 			Port:     3306,
 			Dbname :  "blog",
 			Timeout:  "10s",
@@ -41,5 +41,6 @@ func (c *mysqlDb) Connect() error{
 		return errors.New("连接数据库失败")
 	}
 	db.AutoMigrate(&User{})
+	db.AutoMigrate(&Role{})
 	return nil
 }

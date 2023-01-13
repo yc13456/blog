@@ -20,7 +20,6 @@ func IsChinese(str string) bool {
 
 func ChineseCheck(data any) error{
 	v :=reflect.ValueOf(data)
-	fmt.Println("kind: ",v.Kind())
 	if v.Kind() != reflect.Struct{
 		return errors.New("data is not struct")
 	}
@@ -28,7 +27,6 @@ func ChineseCheck(data any) error{
 		f := v.Field(i)
 		switch f.Kind() {
 		case reflect.String:
-			fmt.Println("str: ",f.String())
 			if IsChinese(f.String()){
 				return errors.New(fmt.Sprintf("Chinese characters found, %s",f.String()))
 			}
